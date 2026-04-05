@@ -9,6 +9,10 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   title: {
     default: "Zippy Scheduler | Easy Pinterest Pin Scheduling",
     template: "%s | Zippy Scheduler",
