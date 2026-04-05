@@ -52,6 +52,12 @@ export default async function DashboardLayout({
               >
                 New Pin
               </Link>
+              <Link
+                href="/dashboard/api-keys"
+                className="text-brand-gray hover:text-brand-dark"
+              >
+                API Keys
+              </Link>
             </div>
           </div>
           <div className="flex items-center gap-4">

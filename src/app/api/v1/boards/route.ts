@@ -1,0 +1,118 @@
+import { NextResponse } from "next/server";
+import { authenticateApiKey } from "@/lib/api-auth";
+import { createAdminClient } from "@/lib/supabase/server";
+import { getValidAccessToken } from "@/lib/pinterest-account";
+import { createBoard, listBoards } from "@/lib/pinterest";
+
+/**
+ * GET /api/v1/boards?account_id=... — list boards for an account
+ * POST /api/v1/boards — create a new board on Pinterest
+ *
+ * Auth: Authorization: Bearer zs_xxxxxxxx
+ */
+export async function GET(request: Request) {
+  const auth = await authenticateApiKey(request);
+  if (!auth) {
+    return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
+  }
+
+  const url = new URL(request.url);
+  const accountId = url.searchParams.get("account_id");
+  if (!accountId) {
+    return NextResponse.json({ error: "account_id required" }, { status: 400 });
+  }
+
+  const admin = createAdminClient();
+  const { data: account } = await admin
+    .from("pinterest_accounts")
+    .select("id")
+    .eq("id", accountId)
+    .eq("user_id", auth.userId)
+    .single();
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  try {
+    const token = await getValidAccessToken(accountId);
+    const result = await listBoards(token);
+    const items = result.items || [];
+
+    for (const board of items) {
+      await admin.from("pinterest_boards").upsert(
+        {
+          account_id: accountId,
+          pinterest_board_id: board.id,
+          name: board.name,
+          description: board.description || "",
+          privacy: board.privacy || "PUBLIC",
+          pin_count: board.pin_count || 0,
+          synced_at: new Date().toISOString(),
+        },
+        { onConflict: "account_id,pinterest_board_id" }
+      );
+    }
+
+    const { data: boards } = await admin
+      .from("pinterest_boards")
+      .select("*")
+      .eq("account_id", accountId)
+      .order("name");
+
+    return NextResponse.json({ boards: boards || [] });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  const auth = await authenticateApiKey(request);
+  if (!auth) {
+    return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
+  }
+
+  const body = await request.json();
+  const { account_id, name, description, privacy } = body;
+
+  if (!account_id || !name) {
+    return NextResponse.json(
+      { error: "account_id and name required" },
+      { status: 400 }
+    );
+  }
+
+  const admin = createAdminClient();
+  const { data: account } = await admin
+    .from("pinterest_accounts")
+    .select("id")
+    .eq("id", account_id)
+    .eq("user_id", auth.userId)
+    .single();
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  try {
+    const token = await getValidAccessToken(account_id);
+    const board = await createBoard(token, { name, description, privacy });
+
+    const { data: saved } = await admin
+      .from("pinterest_boards")
+      .insert({
+        account_id,
+        pinterest_board_id: board.id,
+        name: board.name,
+        description: board.description || "",
+        privacy: board.privacy || "PUBLIC",
+        pin_count: 0,
+      })
+      .select()
+      .single();
+
+    return NextResponse.json({ board: saved });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
