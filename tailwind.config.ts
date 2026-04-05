@@ -9,8 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        brand: {
+          red: "#E60023",        // Pinterest red
+          "red-dark": "#AD081B",
+          dark: "#111111",
+          gray: "#767676",
+          "gray-light": "#F5F5F5",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },
