@@ -53,6 +53,12 @@ export default async function DashboardLayout({
                 New Pin
               </Link>
               <Link
+                href="/dashboard/pins/bulk"
+                className="text-brand-gray hover:text-brand-dark"
+              >
+                Bulk Schedule
+              </Link>
+              <Link
                 href="/dashboard/api-keys"
                 className="text-brand-gray hover:text-brand-dark"
               >
