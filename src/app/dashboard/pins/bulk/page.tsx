@@ -316,7 +316,7 @@ export default function BulkPinsPage() {
                 <span className="text-brand-gray font-bold text-sm mt-2">
                   #{i + 1}
                 </span>
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input
                     type="url"
                     placeholder="Image URL *"
@@ -324,7 +324,7 @@ export default function BulkPinsPage() {
                     onChange={(e) =>
                       updatePin(pin.id, "image_url", e.target.value)
                     }
-                    className="md:col-span-3 border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    className="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
                     type="text"
@@ -334,7 +334,16 @@ export default function BulkPinsPage() {
                       updatePin(pin.id, "title", e.target.value)
                     }
                     maxLength={100}
-                    className="md:col-span-3 border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    className="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="url"
+                    placeholder="Link URL (where pin links to)"
+                    value={pin.link}
+                    onChange={(e) =>
+                      updatePin(pin.id, "link", e.target.value)
+                    }
+                    className="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
                     type="text"
@@ -344,7 +353,7 @@ export default function BulkPinsPage() {
                       updatePin(pin.id, "description", e.target.value)
                     }
                     maxLength={500}
-                    className="md:col-span-3 border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    className="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
                   />
                   <input
                     type="datetime-local"
@@ -352,9 +361,9 @@ export default function BulkPinsPage() {
                     onChange={(e) =>
                       updatePin(pin.id, "scheduled_for", e.target.value)
                     }
-                    className="md:col-span-2 border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    className="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm"
                   />
-                  <div className="md:col-span-1 flex items-center">
+                  <div className="flex items-center">
                     {pin.image_url && (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
