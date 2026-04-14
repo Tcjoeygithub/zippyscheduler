@@ -63,28 +63,42 @@ export default async function PinsPage() {
                 <th className="text-left p-4 font-semibold text-brand-dark hidden lg:table-cell">
                   When
                 </th>
+                <th className="p-4"></th>
               </tr>
             </thead>
             <tbody>
               {pins.map((p) => (
-                <tr key={p.id} className="border-b hover:bg-gray-50">
+                <tr
+                  key={p.id}
+                  className="border-b hover:bg-gray-50 cursor-pointer"
+                >
                   <td className="p-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={p.image_url}
-                      alt=""
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
+                    <Link
+                      href={`/dashboard/pins/${p.id}`}
+                      className="block"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={p.image_url}
+                        alt=""
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                    </Link>
                   </td>
                   <td className="p-4">
-                    <p className="font-semibold text-brand-dark line-clamp-1">
-                      {p.title}
-                    </p>
-                    {p.link && (
-                      <p className="text-xs text-brand-gray truncate max-w-xs">
-                        {p.link}
+                    <Link
+                      href={`/dashboard/pins/${p.id}`}
+                      className="block hover:text-brand-red"
+                    >
+                      <p className="font-semibold text-brand-dark line-clamp-1">
+                        {p.title}
                       </p>
-                    )}
+                      {p.link && (
+                        <p className="text-xs text-brand-gray truncate max-w-xs">
+                          {p.link}
+                        </p>
+                      )}
+                    </Link>
                   </td>
                   <td className="p-4 hidden md:table-cell text-brand-gray">
                     {p.pinterest_boards?.name || "—"}
@@ -102,6 +116,14 @@ export default async function PinsPage() {
                       : p.status === "posted" && p.posted_at
                         ? new Date(p.posted_at).toLocaleString()
                         : new Date(p.created_at).toLocaleString()}
+                  </td>
+                  <td className="p-4 text-right">
+                    <Link
+                      href={`/dashboard/pins/${p.id}`}
+                      className="text-xs font-semibold text-brand-red hover:underline"
+                    >
+                      Edit →
+                    </Link>
                   </td>
                 </tr>
               ))}
